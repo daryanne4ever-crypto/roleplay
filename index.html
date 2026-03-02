@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cambridge Interview Roleplay</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #fff;
+      --text: #1d2a3a;
+      --muted: #678;
+      --primary: #2b6ef2;
+      --primary-dark: #1f53bd;
+      --ok: #1f8a4d;
+      --warn: #b7791f;
+      --danger: #b83232;
+      --border: #d9e2f2;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: linear-gradient(160deg, #eef4ff, #f9fbff);
+      color: var(--text);
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+
+    .app {
+      width: min(980px, 100%);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(43, 110, 242, 0.08);
+      overflow: hidden;
+    }
+
+    header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+      background: #f8fbff;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 1.35rem;
+    }
+
+    .subtitle { margin: 0; color: var(--muted); }
+
+    .content {
+      padding: 20px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .pill {
+      font-size: 0.9rem;
+      color: #21405f;
+      background: #eef5ff;
+      border: 1px solid #cfe0ff;
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+
+    .progress-wrap {
+      width: 100%;
+      height: 12px;
+      background: #e8efff;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, #2b6ef2, #5b9af7);
+      transition: width 0.3s ease;
+    }
+
+    .question-card, .answer-card, .feedback-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      background: #fff;
+    }
+
+    .question {
+      margin: 6px 0 0;
+      font-size: 1.15rem;
+      line-height: 1.4;
+    }
+
+    .status {
+      min-height: 20px;
+      font-weight: 600;
+      color: #1a4f9e;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 90px;
+      resize: vertical;
+      border: 1px solid #cbd6eb;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    button {
+      border: 1px solid #b9caeb;
+      background: #fff;
+      color: #1a3557;
+      border-radius: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button:hover { border-color: var(--primary); color: var(--primary); }
+    button.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+    button.primary:hover { background: var(--primary-dark); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .feedback-text { margin: 0; color: #204465; }
+    .result { border-top: 1px dashed var(--border); margin-top: 14px; padding-top: 14px; }
+    .hidden { display: none; }
+
+    .history-item {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: #fbfdff;
+    }
+
+    .small { color: var(--muted); font-size: 0.92rem; }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <h1>Cambridge Interview Roleplay</h1>
+      <p class="subtitle">B1-B2 practice with voice, recording, scoring, and adaptive feedback.</p>
+    </header>
+
+    <section class="content">
+      <div class="row">
+        <span id="questionCounter" class="pill">Question 1 of 20</span>
+        <span id="candidateName" class="pill">Candidate: Student</span>
+      </div>
+      <div class="progress-wrap"><div id="progressBar" class="progress"></div></div>
+
+      <div class="question-card">
+        <p class="small">Interviewer asks:</p>
+        <p id="questionText" class="question"></p>
+      </div>
+
+      <div class="answer-card">
+        <p id="status" class="status">Press Record to answer.</p>
+        <textarea id="answerInput" placeholder="Your answer appears here..."></textarea>
+        <div class="controls" style="margin-top:10px;">
+          <button id="recordBtn" class="primary">Record</button>
+          <button id="redoBtn">Redo</button>
+          <button id="repeatBtn">Repeat</button>
+          <button id="prevBtn">Previous</button>
+          <button id="nextBtn">Next</button>
+          <button id="finishBtn">Finish Interview</button>
+        </div>
+      </div>
+
+      <div class="feedback-card">
+        <p class="small">Feedback</p>
+        <p id="feedbackText" class="feedback-text">Your feedback will appear here after each answer.</p>
+      </div>
+
+      <div id="resultPanel" class="feedback-card hidden">
+        <h3>Interview Report</h3>
+        <p id="finalScore"></p>
+        <p id="finalLabel"></p>
+        <div id="historyList"></div>
+        <button id="restartBtn" class="primary">Restart Interview</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const questions = [
+      "Tell us about yourself.",
+      "I didn't catch your name. Could you spell it for me?",
+      "How old are you?",
+      "Say your date of birth (example: March fifteenth, nineteen ninety-three).",
+      "Which country do you live in?",
+      "Which state do you live in?",
+      "Which city do you live in?",
+      "What is your profession?",
+      "Why do you want to study abroad?",
+      "Why did you choose Cambridge University?",
+      "What are your goals for this exchange?",
+      "How do you think this experience will help your future?",
+      "What are your strengths?",
+      "What are your weaknesses?",
+      "Describe a challenge you overcame.",
+      "Can you tell us about a project or achievement you are proud of?",
+      "How do you handle difficult situations?",
+      "Why should we choose you?",
+      "Can you give an example of teamwork you were involved in?",
+      "What do you enjoy doing in your free time?"
+    ];
+
+    const positiveFeedback = [
+      "Good answer, {name}!",
+      "Interesting point!",
+      "Thank you for sharing, {name}.",
+      "Excellent point!",
+      "Interesting answer!"
+    ];
+
+    const transitions = [
+      "Hmm... let me think...",
+      "Interesting, tell me more...",
+      "Thank you. Let's continue."
+    ];
+
+    const state = {
+      index: 0,
+      answers: Array(questions.length).fill(""),
+      feedback: Array(questions.length).fill(""),
+      scores: Array(questions.length).fill(0),
+      name: "Student",
+      listening: false
+    };
+
+    const ui = {
+      questionCounter: document.getElementById("questionCounter"),
+      candidateName: document.getElementById("candidateName"),
+      progressBar: document.getElementById("progressBar"),
+      questionText: document.getElementById("questionText"),
+      answerInput: document.getElementById("answerInput"),
+      status: document.getElementById("status"),
+      feedbackText: document.getElementById("feedbackText"),
+      recordBtn: document.getElementById("recordBtn"),
+      redoBtn: document.getElementById("redoBtn"),
+      repeatBtn: document.getElementById("repeatBtn"),
+      prevBtn: document.getElementById("prevBtn"),
+      nextBtn: document.getElementById("nextBtn"),
+      finishBtn: document.getElementById("finishBtn"),
+      resultPanel: document.getElementById("resultPanel"),
+      finalScore: document.getElementById("finalScore"),
+      finalLabel: document.getElementById("finalLabel"),
+      historyList: document.getElementById("historyList"),
+      restartBtn: document.getElementById("restartBtn")
+    };
+
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = SR ? new SR() : null;
+
+    if (recognition) {
+      recognition.lang = "en-US";
+      recognition.interimResults = false;
+      recognition.continuous = false;
+    } else {
+      ui.status.textContent = "Speech Recognition is not supported in this browser. You can type answers.";
+    }
+
+    let silenceTimer = null;
+
+    function randomItem(items) {
+      return items[Math.floor(Math.random() * items.length)];
+    }
+
+    function getQuestionText(index) {
+      const base = questions[index];
+      return index > 1 ? base.replace("you", `${state.name}`) : base;
+    }
+
+    function selectMaleVoice() {
+      const voices = speechSynthesis.getVoices();
+      return voices.find(v => v.lang.startsWith("en") && /male|david|guy|tom|john|brian/i.test(v.name))
+        || voices.find(v => v.lang.startsWith("en"))
+        || null;
+    }
+
+    function speak(text, delay = 450) {
+      return new Promise(resolve => {
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = "en-US";
+        utter.rate = 0.96;
+        utter.pitch = 0.95;
+        const voice = selectMaleVoice();
+        if (voice) utter.voice = voice;
+        setTimeout(() => {
+          speechSynthesis.cancel();
+          speechSynthesis.speak(utter);
+        }, delay);
+        utter.onend = resolve;
+        utter.onerror = resolve;
+      });
+    }
+
+    function computeFeedback(answer) {
+      const cleaned = answer.trim();
+      if (!cleaned) return "Sorry, I didn't catch that. Can you repeat?";
+
+      const words = cleaned.split(/\s+/).filter(Boolean);
+      const hasBecause = /\bbecause\b/i.test(cleaned);
+      const base = randomItem(positiveFeedback).replace("{name}", state.name);
+
+      if (words.length < 6) return `Could you tell me a bit more, ${state.name}?`;
+      if (!hasBecause) return "Try to explain your answer using 'because'.";
+      return base;
+    }
+
+    function computeScore(answer) {
+      const words = answer.trim().split(/\s+/).filter(Boolean);
+      let score = 0;
+      if (words.length >= 6) score += 50;
+      if (/\bbecause\b/i.test(answer)) score += 50;
+      return score;
+    }
+
+    function updateNameFromAnswer(answer) {
+      if (state.index === 1 && answer.trim()) {
+        const candidate = answer.replace(/[^a-z\s-]/gi, "").trim();
+        if (candidate) {
+          state.name = candidate.split(/\s+/).map(w => w[0].toUpperCase() + w.slice(1).toLowerCase()).join(" ");
+        }
+      }
+    }
+
+    function saveCurrent() {
+      const answer = ui.answerInput.value.trim();
+      state.answers[state.index] = answer;
+      updateNameFromAnswer(answer);
+      state.scores[state.index] = computeScore(answer);
+      state.feedback[state.index] = computeFeedback(answer);
+      ui.candidateName.textContent = `Candidate: ${state.name}`;
+      ui.feedbackText.textContent = state.feedback[state.index];
+    }
+
+    function updateProgress() {
+      ui.questionCounter.textContent = `Question ${state.index + 1} of ${questions.length}`;
+      ui.progressBar.style.width = `${((state.index + 1) / questions.length) * 100}%`;
+      ui.prevBtn.disabled = state.index === 0;
+      ui.nextBtn.disabled = state.index === questions.length - 1;
+    }
+
+    async function renderQuestion(announce = false) {
+      ui.questionText.textContent = getQuestionText(state.index);
+      ui.answerInput.value = state.answers[state.index] || "";
+      ui.feedbackText.textContent = state.feedback[state.index] || "Your feedback will appear here after each answer.";
+      updateProgress();
+
+      if (announce) {
+        ui.status.textContent = "Interviewer is speaking...";
+        await speak(getQuestionText(state.index));
+        ui.status.textContent = "Press Record to answer.";
+      }
+    }
+
+    function startSilenceTimer() {
+      clearTimeout(silenceTimer);
+      silenceTimer = setTimeout(() => {
+        if (state.listening && recognition) recognition.stop();
+      }, 3500);
+    }
+
+    if (recognition) {
+      recognition.onstart = () => {
+        state.listening = true;
+        ui.status.textContent = "Listening...";
+        startSilenceTimer();
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        ui.answerInput.value = transcript;
+        startSilenceTimer();
+      };
+
+      recognition.onend = async () => {
+        clearTimeout(silenceTimer);
+        state.listening = false;
+        saveCurrent();
+        ui.status.textContent = "Answer captured.";
+        await speak(state.feedback[state.index], 280);
+      };
+
+      recognition.onerror = async () => {
+        state.listening = false;
+        clearTimeout(silenceTimer);
+        const msg = "Sorry, I didn't understand. Can you repeat?";
+        ui.feedbackText.textContent = msg;
+        ui.status.textContent = "Recognition issue. Try again.";
+        await speak(msg, 220);
+      };
+    }
+
+    ui.recordBtn.addEventListener("click", () => {
+      if (!recognition) return;
+      if (state.listening) {
+        recognition.stop();
+      } else {
+        recognition.start();
+      }
+    });
+
+    ui.redoBtn.addEventListener("click", () => {
+      ui.answerInput.value = "";
+      state.answers[state.index] = "";
+      state.feedback[state.index] = "";
+      state.scores[state.index] = 0;
+      ui.feedbackText.textContent = "Answer reset. Record again.";
+      ui.status.textContent = "Answer cleared.";
+    });
+
+    ui.repeatBtn.addEventListener("click", async () => {
+      await speak(getQuestionText(state.index));
+    });
+
+    ui.nextBtn.addEventListener("click", async () => {
+      saveCurrent();
+      if (state.index < questions.length - 1) {
+        state.index += 1;
+        await renderQuestion(false);
+        await speak(randomItem(transitions), 220);
+        await renderQuestion(true);
+      }
+    });
+
+    ui.prevBtn.addEventListener("click", async () => {
+      saveCurrent();
+      if (state.index > 0) {
+        state.index -= 1;
+        await renderQuestion(true);
+      }
+    });
+
+    function qualityLabel(percent) {
+      if (percent >= 90) return "Strong Candidate";
+      if (percent >= 70) return "Good Potential";
+      return "Needs Improvement";
+    }
+
+    ui.finishBtn.addEventListener("click", () => {
+      saveCurrent();
+      const max = questions.length * 100;
+      const total = state.scores.reduce((sum, n) => sum + n, 0);
+      const percent = Math.round((total / max) * 100);
+
+      ui.finalScore.textContent = `Candidate strength: ${percent}%`;
+      ui.finalLabel.textContent = `Evaluation: ${qualityLabel(percent)}`;
+
+      ui.historyList.innerHTML = "";
+      questions.forEach((q, i) => {
+        const item = document.createElement("div");
+        item.className = "history-item";
+        item.innerHTML = `
+          <strong>Q${i + 1}:</strong> ${q}<br>
+          <strong>A:</strong> ${state.answers[i] || "(no answer)"}<br>
+          <strong>Feedback:</strong> ${state.feedback[i] || "(no feedback)"}<br>
+          <strong>Score:</strong> ${state.scores[i]}/100
+        `;
+        ui.historyList.appendChild(item);
+      });
+
+      ui.resultPanel.classList.remove("hidden");
+    });
+
+    ui.restartBtn.addEventListener("click", async () => {
+      state.index = 0;
+      state.name = "Student";
+      state.answers = Array(questions.length).fill("");
+      state.feedback = Array(questions.length).fill("");
+      state.scores = Array(questions.length).fill(0);
+      ui.resultPanel.classList.add("hidden");
+      await renderQuestion(true);
+    });
+
+    speechSynthesis.onvoiceschanged = () => {};
+    renderQuestion(true);
+  </script>
+</body>
+</html>
