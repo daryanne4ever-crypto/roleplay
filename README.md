@@ -13,6 +13,12 @@ This game trains students to identify:
 - Connectors: `and`, `but`, `because`
 - Listening comprehension
 
+## Question bank
+
+- 25 prompts in `data/questions.js`
+- Questions 1–5: mixed grammar targets (gerund, infinitive, continuous, adjective `-ing`)
+- Questions 6–25: gerund-focused listening practice with real-life classroom contexts
+
 ## Project structure
 
 ```text
@@ -23,11 +29,7 @@ This game trains students to identify:
 ├── data/
 │   └── questions.js
 ├── audio/
-│   ├── q1.mp3
-│   ├── q2.mp3
-│   ├── q3.mp3
-│   ├── q4.mp3
-│   └── q5.mp3
+│   ├── q1.mp3 ... q25.mp3
 └── images/
 ```
 
@@ -43,9 +45,16 @@ python3 -m http.server 8000
 
 Then open <http://localhost:8000>.
 
+## Gameplay
+
+1. Click **Play Audio**.
+2. Select the correct grammar function.
+3. If needed, click **Show Sentence** to reveal the written sentence.
+4. Click **Next** to continue.
+
 ## Audio notes
 
-The game references `audio/q1.mp3` to `audio/q5.mp3`.
+The game references `audio/q1.mp3` to `audio/q25.mp3`.
 
 - Add your own recordings in the `audio/` folder.
 - If files are missing, the game automatically falls back to browser text-to-speech when available.
@@ -61,6 +70,6 @@ The game references `audio/q1.mp3` to `audio/q5.mp3`.
 
 - Timer and streak system
 - Level progression
-- More question banks (50/100+)
+- Extra packs mixing gerund + infinitive in the same round
 - Leaderboard and class ranking
 - React + Firebase version with student login

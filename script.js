@@ -3,9 +3,9 @@ let score = 0;
 let answered = false;
 
 const playBtn = document.getElementById("playBtn");
-const revealBtn = document.getElementById("revealBtn");
+const showBtn = document.getElementById("showSentence");
 const choices = document.querySelectorAll(".choice");
-const sentence = document.getElementById("sentence");
+const sentenceText = document.getElementById("sentenceText");
 const feedback = document.getElementById("feedback");
 const scoreDisplay = document.getElementById("score");
 const nextBtn = document.getElementById("next");
@@ -19,8 +19,8 @@ function currentItem() {
 function renderQuestion() {
   const item = currentItem();
   questionCounter.textContent = `Question ${currentQuestion + 1} / ${questions.length}`;
-  sentence.textContent = item.sentence;
-  sentence.classList.add("hidden");
+  sentenceText.textContent = "";
+  sentenceText.classList.add("hidden");
   feedback.textContent = "";
   feedback.className = "feedback";
   nextBtn.disabled = true;
@@ -90,8 +90,9 @@ function finishGame() {
 
 playBtn.addEventListener("click", playAudio);
 
-revealBtn.addEventListener("click", () => {
-  sentence.classList.toggle("hidden");
+showBtn.addEventListener("click", () => {
+  sentenceText.textContent = currentItem().sentence;
+  sentenceText.classList.remove("hidden");
 });
 
 choices.forEach((button) => {
