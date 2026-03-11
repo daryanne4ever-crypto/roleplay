@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ING Listening Game</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="game">
+      <h1>ING Listening Game</h1>
+      <p class="subtitle">
+        Listen to each sentence and choose the grammar function highlighted in the prompt.
+      </p>
+
+      <section class="card">
+        <p><strong>Round:</strong> <span id="round">1</span>/<span id="total">5</span></p>
+        <p id="prompt">Press play to hear the sentence.</p>
+        <button id="playBtn" type="button">▶ Play Sentence</button>
+
+        <div class="buttons">
+          <button type="button" data-choice="gerund">Gerund</button>
+          <button type="button" data-choice="adjective">Adjective (-ing)</button>
+          <button type="button" data-choice="continuous">Continuous Verb</button>
+          <button type="button" data-choice="infinitive">Infinitive</button>
+        </div>
+
+        <p id="result" aria-live="polite"></p>
+      </section>
+
+      <section class="scoreboard">
+        <p><strong>Score:</strong> <span id="score">0</span></p>
+        <button id="restartBtn" type="button" hidden>Restart Game</button>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
