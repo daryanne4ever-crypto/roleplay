@@ -1,0 +1,139 @@
+:root {
+  color-scheme: light;
+  --bg: #eef4ff;
+  --card: #ffffff;
+  --text: #1f2430;
+  --primary: #2f6fed;
+  --primary-dark: #1f52b6;
+  --accent: #16a085;
+  --danger: #c0392b;
+  --border: #d8e1f1;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  color: var(--text);
+  background: radial-gradient(circle at top, #f8fbff 0%, var(--bg) 70%);
+}
+
+.app {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+.hero,
+.game-card,
+.levels {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 6px 20px rgba(32, 71, 145, 0.07);
+}
+
+h1,
+h2 {
+  margin: 0 0 8px;
+}
+
+.top-row {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+}
+
+.instructions {
+  margin-top: 10px;
+}
+
+.controls,
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+button {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.primary {
+  background: var(--primary);
+  color: white;
+}
+
+.primary:hover {
+  background: var(--primary-dark);
+}
+
+.ghost {
+  background: #f1f4fb;
+  border: 1px solid var(--border);
+}
+
+.choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.choice {
+  background: #d9e7ff;
+}
+
+.choice.correct {
+  background: #d8f5e7;
+  outline: 2px solid var(--accent);
+}
+
+.choice.wrong {
+  background: #fde6e4;
+  outline: 2px solid var(--danger);
+}
+
+.feedback {
+  min-height: 24px;
+  font-weight: 700;
+}
+
+.feedback.correct {
+  color: var(--accent);
+}
+
+.feedback.wrong {
+  color: var(--danger);
+}
+
+.feedback.info {
+  color: #4f5f7f;
+}
+
+.sentence {
+  padding: 10px;
+  margin: 8px 0 14px;
+  border-left: 4px solid var(--primary);
+  background: #f3f7ff;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .choices {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ING Quest – Listening & Grammar Game</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="hero">
+        <h1>ING Quest – Listening & Grammar Game</h1>
+        <p>
+          Train gerund, infinitive, continuous tenses, connectors
+          (<strong>and</strong>, <strong>but</strong>, <strong>because</strong>) and listening.
+        </p>
+      </header>
+
+      <section class="game-card">
+        <div class="top-row">
+          <span id="questionCounter">Question 1 / 5</span>
+          <span id="score">Score: 0</span>
+        </div>
+
+        <p class="instructions">Listen to the sentence and choose the grammar function.</p>
+
+        <div class="controls">
+          <button id="playBtn" class="primary">▶ Play Audio</button>
+          <button id="revealBtn" class="ghost">Show sentence</button>
+        </div>
+
+        <p id="sentence" class="sentence hidden" aria-live="polite"></p>
+
+        <div id="choices" class="choices" role="group" aria-label="Answer choices">
+          <button class="choice">Gerund (Noun)</button>
+          <button class="choice">Adjective -ING</button>
+          <button class="choice">Continuous Verb</button>
+          <button class="choice">Infinitive</button>
+        </div>
+
+        <p id="feedback" class="feedback" aria-live="assertive"></p>
+
+        <div class="actions">
+          <button id="next" class="primary" disabled>Next</button>
+          <button id="restart" class="ghost hidden">Restart game</button>
+        </div>
+      </section>
+
+      <section class="levels">
+        <h2>Suggested classroom levels</h2>
+        <ol>
+          <li>Identify gerund</li>
+          <li>Gerund vs infinitive</li>
+          <li>Functions of -ing</li>
+          <li>Connectors: and, but, because</li>
+          <li>Full listening challenge</li>
+        </ol>
+      </section>
+    </main>
+
+    <script src="data/questions.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
