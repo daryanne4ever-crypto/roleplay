@@ -1,23 +1,25 @@
-# ING Quest – Listening & Grammar Game
+# 💜 ING & Connect: The Ultimate Classroom Challenge
 
-A browser-based educational game for English classes.
+Professional browser game for English classrooms with listening, grammar, voice interaction, scoring, timer, and ranking.
 
-## Learning goals
+## What this project teaches
 
-This game trains students to identify:
+- Gerund vs Infinitive decision making
+- Connectors (`and`, `but`, `because`)
+- Listening-first workflow (audio before visible text)
+- Pronunciation practice with Web Speech API
 
-- Gerund (`-ing` as noun)
-- Infinitive (`to + verb`)
-- Continuous verb forms
-- Adjectives ending in `-ing`
-- Connectors: `and`, `but`, `because`
-- Listening comprehension
+## Professional features
 
-## Question bank
-
-- 25 prompts in `data/questions.js`
-- Questions 1–5: mixed grammar targets (gerund, infinitive, continuous, adjective `-ing`)
-- Questions 6–25: gerund-focused listening practice with real-life classroom contexts
+- **80-question bank** with scaffolded difficulty (`1` to `5`)
+- **Modes**: All Challenges, Gerund, Infinitive, Connectors
+- **Timer + scoring bonus** (`timeLeft * 10`)
+- **Hint penalty** (`-5 points`)
+- **Wrong answer penalty** (`-50 points`) + lives system
+- **Voice recognition** for sentence repetition bonus
+- **LocalStorage persistence** for progress, score, mode, ranking
+- **Class leaderboard** (Top 5)
+- **Auntie feedback box** with dynamic mood states
 
 ## Project structure
 
@@ -25,51 +27,37 @@ This game trains students to identify:
 .
 ├── index.html
 ├── style.css
-├── script.js
+├── game.js
 ├── data/
-│   └── questions.js
+│   └── phrases.js
 ├── audio/
-│   ├── q1.mp3 ... q25.mp3
+│   └── (q1..q80/c51..c80 mp3 files - optional)
 └── images/
 ```
 
-## How to run
-
-1. Clone this repository.
-2. Open `index.html` directly in your browser.
-3. (Recommended) Serve with a simple local server for best audio behavior:
+## Run locally
 
 ```bash
 python3 -m http.server 8000
 ```
 
-Then open <http://localhost:8000>.
+Open <http://localhost:8000>.
 
-## Gameplay
+## Audio behavior
 
-1. Click **Play Audio**.
-2. Select the correct grammar function.
-3. If needed, click **Show Sentence** to reveal the written sentence.
-4. Click **Next** to continue.
+Each question references an MP3 path in `audio/`.
+If a file is missing, the game falls back to browser text-to-speech (when supported).
 
-## Audio notes
+## Voice recognition notes
 
-The game references `audio/q1.mp3` to `audio/q25.mp3`.
+The mic button uses `SpeechRecognition` / `webkitSpeechRecognition`.
+If unsupported, the UI gracefully disables voice capture.
 
-- Add your own recordings in the `audio/` folder.
-- If files are missing, the game automatically falls back to browser text-to-speech when available.
+## Portfolio value
 
-## Classroom mode idea
+This project demonstrates:
 
-- Divide students into groups.
-- Play each sentence once or twice.
-- Groups discuss and choose a grammar function.
-- Award points for correct answers.
-
-## Future improvements
-
-- Timer and streak system
-- Level progression
-- Extra packs mixing gerund + infinitive in the same round
-- Leaderboard and class ranking
-- React + Firebase version with student login
+- Applied educational design
+- UI/UX with a complete game loop
+- Data modeling for scalable content packs
+- Browser APIs integration (Speech + Storage)

@@ -3,62 +3,76 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ING Quest – Listening & Grammar Game</title>
+    <title>ING & Connect Quest | Professional Edition</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <main class="app">
-      <header class="hero">
-        <h1>ING Quest – Listening & Grammar Game</h1>
-        <p>
-          Train gerund, infinitive, continuous tenses, connectors
-          (<strong>and</strong>, <strong>but</strong>, <strong>because</strong>) and listening.
-        </p>
-      </header>
+    <nav class="sidebar">
+      <div class="logo">EQ</div>
+      <button class="nav-btn active" data-mode="all">All Challenges</button>
+      <button class="nav-btn" data-mode="gerund">Gerund</button>
+      <button class="nav-btn" data-mode="infinitive">Infinitive</button>
+      <button class="nav-btn" data-mode="connector">Connectors</button>
 
-      <section class="game-card">
-        <div class="top-row">
-          <span id="questionCounter">Question 1 / 5</span>
-          <span id="score">Score: 0</span>
-        </div>
+      <div class="progress-info">
+        <span>Total Progress</span>
+        <div class="mini-bar"><div id="total-progress-fill"></div></div>
+      </div>
+    </nav>
 
-        <p class="instructions">Listen to the sentence and choose the grammar function.</p>
+    <main class="game-area">
+      <section class="card" id="game-card">
+        <header class="card-header">
+          <span id="category-tag">GERUND</span>
+          <span id="question-tag">Question 1 / 80</span>
+          <div id="lives" class="lives">❤️❤️❤️</div>
+        </header>
 
-        <div class="controls">
-          <button id="playBtn" class="primary">▶ Play Audio</button>
-          <button id="showSentence" class="ghost">Show Sentence</button>
-        </div>
+        <section class="stats-row">
+          <p>Score: <b id="score">0</b></p>
+          <p>Time: <b id="timer">15</b>s</p>
+        </section>
 
-        <p id="sentenceText" class="sentence hidden" aria-live="polite"></p>
+        <div class="progress-bar"><div id="progress"></div></div>
 
-        <div id="choices" class="choices" role="group" aria-label="Answer choices">
-          <button class="choice">Gerund (Noun)</button>
-          <button class="choice">Adjective -ING</button>
-          <button class="choice">Continuous Verb</button>
-          <button class="choice">Infinitive</button>
-        </div>
+        <section class="question-box">
+          <button id="play-btn" class="circle-btn" aria-label="Play audio">🔊</button>
+          <h2 id="sentence-text" class="blur">Click the eye button to reveal sentence</h2>
+          <button id="toggle-text" class="eye-btn" aria-label="Show sentence">👁️</button>
+        </section>
 
-        <p id="feedback" class="feedback" aria-live="assertive"></p>
+        <div id="sentence-display" class="hidden sentence-panel"></div>
 
-        <div class="actions">
-          <button id="next" class="primary" disabled>Next</button>
-          <button id="restart" class="ghost hidden">Restart game</button>
-        </div>
+        <section id="options-container" class="options-grid" aria-label="Answer options"></section>
+
+        <section class="voice-section">
+          <button id="mic-btn" class="mic-inactive">🎤 Start recording</button>
+          <p id="transcript">Waiting for your voice...</p>
+        </section>
+
+        <section id="feedback-panel" class="feedback-panel hidden">
+          <h3 id="feedback-title"></h3>
+          <p id="feedback-suggestion"></p>
+          <button id="next-btn" class="next-btn">Continue</button>
+        </section>
+
+        <footer class="card-footer">
+          <button id="hint-btn" class="hint-trigger">💡 Show hint (-5 pts)</button>
+
+          <div class="auntie-box">
+            <div id="auntie-mood" class="auntie-avatar">🧠</div>
+            <p id="auntie-line">Auntie says: Listen first, then answer.</p>
+          </div>
+        </footer>
       </section>
 
-      <section class="levels">
-        <h2>Suggested classroom levels</h2>
-        <ol>
-          <li>Identify gerund</li>
-          <li>Gerund vs infinitive</li>
-          <li>Functions of -ing</li>
-          <li>Connectors: and, but, because</li>
-          <li>Full listening challenge</li>
-        </ol>
-      </section>
+      <aside id="ranking-section" class="ranking-card">
+        <h3>Class Ranking</h3>
+        <ol id="leaderboard"></ol>
+      </aside>
     </main>
 
-    <script src="data/questions.js"></script>
-    <script src="script.js"></script>
+    <script src="data/phrases.js"></script>
+    <script src="game.js"></script>
   </body>
 </html>
