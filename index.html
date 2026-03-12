@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ING & Connect Quest | Professional Edition</title>
+    <title>English Quest: Auntie Challenge</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -21,48 +21,48 @@
     </nav>
 
     <main class="game-area">
-      <section class="card" id="game-card">
-        <header class="card-header">
-          <span id="category-tag">GERUND</span>
-          <span id="question-tag">Question 1 / 80</span>
-          <div id="lives" class="lives">❤️❤️❤️</div>
+      <section id="game-card" class="card">
+        <header>
+          <div class="stats">
+            <span>Pontos: <b id="score">0</b></span>
+            <span>Tempo: <b id="timer">120</b>s</span>
+          </div>
+          <h1>English Quest: Auntie Challenge</h1>
+          <div class="progress-bar"><div id="progress"></div></div>
         </header>
 
-        <section class="stats-row">
-          <p>Score: <b id="score">0</b></p>
-          <p>Time: <b id="timer">15</b>s</p>
-        </section>
+        <div class="card-header">
+          <span id="category-tag">PRÁTICA LIVRE</span>
+          <span id="question-tag">Question 1</span>
+        </div>
 
-        <div class="progress-bar"><div id="progress"></div></div>
+        <div class="avatar-container">
+          <img id="auntie-avatar" src="images/auntie-thinking.svg" alt="Auntie" />
+        </div>
 
-        <section class="question-box">
-          <button id="play-btn" class="circle-btn" aria-label="Play audio">🔊</button>
-          <h2 id="sentence-text" class="blur">Click the eye button to reveal sentence</h2>
+        <div class="question-box">
+          <button id="play-audio" class="circle-btn" aria-label="Play audio">🔊</button>
+          <h2 id="display-text" class="blur">Clique no olho para ver a frase</h2>
           <button id="toggle-text" class="eye-btn" aria-label="Show sentence">👁️</button>
-        </section>
+        </div>
 
         <div id="sentence-display" class="hidden sentence-panel"></div>
 
-        <section id="options-container" class="options-grid" aria-label="Answer options"></section>
+        <div id="options-container" class="options-grid"></div>
 
-        <section class="voice-section">
-          <button id="mic-btn" class="mic-inactive">🎤 Start recording</button>
-          <p id="transcript">Waiting for your voice...</p>
-        </section>
+        <div class="voice-section">
+          <button id="mic-btn" class="mic-inactive">🎤 Gravar Pronúncia</button>
+          <p id="transcript">Aguardando...</p>
+        </div>
 
         <section id="feedback-panel" class="feedback-panel hidden">
           <h3 id="feedback-title"></h3>
           <p id="feedback-suggestion"></p>
-          <button id="next-btn" class="next-btn">Continue</button>
+          <button id="next-btn" class="next-btn">Continuar</button>
         </section>
 
         <footer class="card-footer">
-          <button id="hint-btn" class="hint-trigger">💡 Show hint (-5 pts)</button>
-
-          <div class="auntie-box">
-            <div id="auntie-mood" class="auntie-avatar">🧠</div>
-            <p id="auntie-line">Auntie says: Listen first, then answer.</p>
-          </div>
+          <button id="hint-btn" class="hint-trigger">💡 Dica da Auntie (-5)</button>
         </footer>
       </section>
 

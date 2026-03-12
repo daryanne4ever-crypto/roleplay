@@ -1,15 +1,17 @@
-const QUESTION_TIME = 15;
+const QUESTION_TIME = 120;
 const HINT_PENALTY = 5;
-const WRONG_PENALTY = 50;
 const TOP_RANKING = 5;
 
 const scoreEl = document.getElementById("score");
 const timerEl = document.getElementById("timer");
 const progressEl = document.getElementById("progress");
+const totalProgressFill = document.getElementById("total-progress-fill");
 const optionsEl = document.getElementById("options-container");
 const sentenceDisplay = document.getElementById("sentence-display");
-const sentenceText = document.getElementById("sentence-text");
-const playBtn = document.getElementById("play-btn");
+const displayText = document.getElementById("display-text");
+const categoryTag = document.getElementById("category-tag");
+const questionTag = document.getElementById("question-tag");
+const playBtn = document.getElementById("play-audio");
 const hintBtn = document.getElementById("hint-btn");
 const micBtn = document.getElementById("mic-btn");
 const transcriptEl = document.getElementById("transcript");
@@ -18,120 +20,138 @@ const feedbackTitle = document.getElementById("feedback-title");
 const feedbackSuggestion = document.getElementById("feedback-suggestion");
 const nextBtn = document.getElementById("next-btn");
 const leaderboardEl = document.getElementById("leaderboard");
-const livesEl = document.getElementById("lives");
-const categoryTag = document.getElementById("category-tag");
-const questionTag = document.getElementById("question-tag");
-const auntieMood = document.getElementById("auntie-mood");
-const auntieLine = document.getElementById("auntie-line");
-const totalProgressFill = document.getElementById("total-progress-fill");
-
-let currentMode = "all";
-let modeData = [...gameData];
-let currentIdx = Number(localStorage.getItem("ingquest_current_idx") || 0);
-let score = Number(localStorage.getItem("ingquest_score") || 0);
-let lives = Number(localStorage.getItem("ingquest_lives") || 3);
-let timeLeft = QUESTION_TIME;
-let timerInterval;
-let answered = false;
-let recognition;
-let isRecording = false;
-
+const auntieAvatar = document.getElementById("auntie-avatar");
 const navButtons = document.querySelectorAll(".nav-btn");
 
-function persistState() {
-  localStorage.setItem("ingquest_current_idx", String(currentIdx));
-  localStorage.setItem("ingquest_score", String(score));
-  localStorage.setItem("ingquest_lives", String(lives));
-  localStorage.setItem("ingquest_mode", currentMode);
-}
+let currentMode = localStorage.getItem("ingquest_mode") || "all";
+let modeData = [];
+let currentIdx = Number(localStorage.getItem("userProgress") || 0);
+let score = Number(localStorage.getItem("ingquest_score") || 0);
+let timeLeft = QUESTION_TIME;
+let timerInterval;
+let recognition;
+let isRecording = false;
+let canAdvance = false;
 
-function loadModePreference() {
-  const savedMode = localStorage.getItem("ingquest_mode");
-  if (savedMode && ["all", "gerund", "infinitive", "connector"].includes(savedMode)) {
-    currentMode = savedMode;
-  }
-}
-
-function filterData(mode) {
+function getModeData(mode) {
   if (mode === "gerund") return gameData.filter((q) => q.category === "Gerund");
   if (mode === "infinitive") return gameData.filter((q) => q.category === "Infinitive");
   if (mode === "connector") return gameData.filter((q) => q.category === "Connector");
   return [...gameData];
 }
 
-function updateAuntie(mood, line) {
-  const moods = {
-    happy: "😄",
-    thinking: "🤔",
-    idea: "💡",
-    warning: "😬",
-    angry: "😤",
-    neutral: "🧠",
-  };
-  auntieMood.textContent = moods[mood] || moods.neutral;
-  auntieLine.textContent = line;
+function updateAuntie(mood = "thinking") {
+  auntieAvatar.src = `images/auntie-${mood}.svg`;
 }
 
-function updateLives() {
-  livesEl.textContent = "❤️".repeat(Math.max(lives, 0)) || "💔";
+function setFeedback(title, message) {
+  feedbackTitle.textContent = title;
+  feedbackSuggestion.textContent = message;
+  feedbackPanel.classList.remove("hidden");
 }
 
-function updateProgress() {
-  const percent = modeData.length ? ((currentIdx + 1) / modeData.length) * 100 : 0;
-  progressEl.style.width = `${Math.min(percent, 100)}%`;
-
-  const overall = Number(localStorage.getItem("ingquest_overall_done") || 0);
-  const allPercent = Math.min((overall / gameData.length) * 100, 100);
-  totalProgressFill.style.width = `${allPercent}%`;
+function hideFeedback() {
+  feedbackPanel.classList.add("hidden");
 }
 
-function updateScore() {
-  scoreEl.textContent = score;
+function persistState() {
+  localStorage.setItem("ingquest_score", String(score));
+  localStorage.setItem("ingquest_mode", currentMode);
+  localStorage.setItem("userProgress", String(currentIdx));
 }
 
 function currentQuestion() {
   return modeData[currentIdx];
 }
 
-function normalizeText(input) {
-  return input.toLowerCase().replace(/[.,!?']/g, "").replace(/\s+/g, " ").trim();
+function updateScore() {
+  scoreEl.textContent = score;
+}
+
+function updateProgress() {
+  const modePercent = modeData.length ? ((currentIdx + 1) / modeData.length) * 100 : 0;
+  progressEl.style.width = `${Math.min(modePercent, 100)}%`;
+
+  const overall = Number(localStorage.getItem("ingquest_overall_done") || 0);
+  totalProgressFill.style.width = `${Math.min((overall / gameData.length) * 100, 100)}%`;
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timeLeft = QUESTION_TIME;
+  timerEl.textContent = timeLeft;
+
+  timerInterval = setInterval(() => {
+    timeLeft -= 1;
+    timerEl.textContent = timeLeft;
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      updateAuntie("thinking");
+      setFeedback("Tempo encerrado", "O tempo acabou! Ouça o áudio novamente e tente de novo.");
+      displayText.classList.remove("blur");
+    }
+  }, 1000);
 }
 
 function speakSentence(text) {
-  if ("speechSynthesis" in window) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "en-US";
-    utterance.rate = 0.95;
-    speechSynthesis.speak(utterance);
-    return true;
-  }
-  return false;
+  if (!("speechSynthesis" in window)) return false;
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "en-US";
+  utterance.rate = 0.95;
+  speechSynthesis.speak(utterance);
+  return true;
 }
 
 function playAudio() {
   const q = currentQuestion();
   if (!q) return;
-
   const audio = new Audio(q.audio);
   audio.play().catch(() => {
-    const ok = speakSentence(q.sentence);
-    if (ok) {
-      updateAuntie("thinking", "No MP3 found, so I used browser voice. Keep listening!");
-    } else {
-      updateAuntie("warning", "Audio unavailable. Add your files in /audio.");
+    if (!speakSentence(q.sentence)) {
+      setFeedback("Audio indisponível", "Adicione os arquivos MP3 na pasta /audio.");
     }
   });
 }
 
-function setFeedback(title, suggestion, tone = "neutral") {
-  feedbackTitle.textContent = title;
-  feedbackSuggestion.textContent = suggestion;
-  feedbackPanel.classList.remove("hidden");
-  updateAuntie(tone, suggestion);
+function showSentence() {
+  sentenceDisplay.classList.remove("hidden");
+  displayText.classList.remove("blur");
 }
 
-function hideFeedback() {
-  feedbackPanel.classList.add("hidden");
+function useHint() {
+  score -= HINT_PENALTY;
+  updateScore();
+  showSentence();
+  updateAuntie("thinking");
+  setFeedback("Dica aplicada (-5)", currentQuestion().hint);
+  persistState();
+}
+
+function incrementOverallDone() {
+  const done = Number(localStorage.getItem("ingquest_overall_done") || 0);
+  localStorage.setItem("ingquest_overall_done", String(Math.min(done + 1, gameData.length)));
+}
+
+function checkAnswer(selected) {
+  const q = currentQuestion();
+
+  if (selected === q.answer) {
+    clearInterval(timerInterval);
+    score += 100;
+    updateScore();
+    incrementOverallDone();
+    updateAuntie("idea");
+    setFeedback("Excelente!", "Você acertou. Continue para a próxima frase.");
+    canAdvance = true;
+    persistState();
+    return;
+  }
+
+  // Erro: não avança, aluno refaz a questão
+  updateAuntie("thinking");
+  showSentence();
+  setFeedback("Ops!", "Essa não é a resposta correta. Tente novamente, você consegue!");
 }
 
 function renderQuestion() {
@@ -141,134 +161,49 @@ function renderQuestion() {
     return;
   }
 
-  answered = false;
+  canAdvance = false;
   hideFeedback();
   sentenceDisplay.classList.add("hidden");
   sentenceDisplay.textContent = q.sentence;
-  sentenceText.classList.add("blur");
-  sentenceText.textContent = q.sentence;
-  optionsEl.innerHTML = "";
+  displayText.classList.add("blur");
+  displayText.textContent = q.sentence;
   categoryTag.textContent = q.category.toUpperCase();
   questionTag.textContent = `Question ${currentIdx + 1} / ${modeData.length}`;
 
-  q.options.forEach((opt) => {
+  optionsEl.innerHTML = "";
+  q.options.forEach((option) => {
     const btn = document.createElement("button");
     btn.className = "option-btn";
-    btn.textContent = opt;
-    btn.addEventListener("click", () => checkAnswer(opt));
+    btn.textContent = option;
+    btn.onclick = () => checkAnswer(option);
     optionsEl.appendChild(btn);
   });
 
-  timeLeft = QUESTION_TIME;
-  timerEl.textContent = timeLeft;
   updateProgress();
   startTimer();
   persistState();
 }
 
-function disableOptions() {
-  optionsEl.querySelectorAll("button").forEach((button) => {
-    button.disabled = true;
-  });
-}
-
-function checkAnswer(selected) {
-  if (answered) return;
-  answered = true;
-  clearInterval(timerInterval);
-
-  const q = currentQuestion();
-  disableOptions();
-
-  if (selected === q.answer) {
-    score += timeLeft * 10;
-    updateScore();
-    incrementOverallProgress();
-    setFeedback("Correct! 🌟", `Auntie's tip: ${q.hint}`, "happy");
-  } else {
-    score -= WRONG_PENALTY;
-    lives -= 1;
-    updateScore();
-    updateLives();
-    setFeedback(
-      "Not this time!",
-      `Correct answer: ${q.answer}. Auntie's tip: ${q.hint}`,
-      lives <= 1 ? "angry" : "thinking"
-    );
-  }
-
-  persistState();
-
-  if (lives <= 0) {
-    setFeedback("Game Over", "You used all lives. Save score and try again.", "warning");
-    nextBtn.textContent = "Save score";
-  } else {
-    nextBtn.textContent = "Continue";
-  }
-}
-
-function incrementOverallProgress() {
-  const done = Number(localStorage.getItem("ingquest_overall_done") || 0);
-  localStorage.setItem("ingquest_overall_done", String(Math.min(done + 1, gameData.length)));
-}
-
-function startTimer() {
-  clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    timeLeft -= 1;
-    timerEl.textContent = timeLeft;
-
-    if (timeLeft <= 0) {
-      checkAnswer(null);
-    }
-  }, 1000);
-}
-
-function showSentence() {
-  sentenceDisplay.classList.remove("hidden");
-  sentenceText.classList.remove("blur");
-}
-
-function useHint() {
-  if (answered) return;
-  score -= HINT_PENALTY;
-  updateScore();
-  showSentence();
-  setFeedback("Hint used (-5)", currentQuestion().hint, "idea");
-  persistState();
-}
-
-function goNext() {
-  if (lives <= 0) {
-    endGame();
-    return;
-  }
-
-  if (!answered) {
-    setFeedback("Answer first", "Choose an option before continuing.", "thinking");
+function nextQuestion() {
+  if (!canAdvance) {
+    setFeedback("Ainda não", "Para avançar, você precisa acertar a questão atual.");
     return;
   }
 
   currentIdx += 1;
-  if (currentIdx >= modeData.length) {
+  if (currentIdx < modeData.length) {
+    renderQuestion();
+  } else {
     endGame();
-    return;
   }
-
-  renderQuestion();
 }
 
-function switchGame(mode) {
-  currentMode = mode;
-  modeData = filterData(mode);
-  currentIdx = 0;
-  lives = 3;
-  score = 0;
-  updateLives();
-  updateScore();
-  navButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.mode === mode));
-  persistState();
-  renderQuestion();
+function saveScore() {
+  const name = prompt("Fim da trilha! Digite seu nome para o ranking:") || "Anonymous";
+  const ranking = JSON.parse(localStorage.getItem("ingquest_ranking") || "[]");
+  ranking.push({ name: name.trim().slice(0, 20), score });
+  ranking.sort((a, b) => b.score - a.score);
+  localStorage.setItem("ingquest_ranking", JSON.stringify(ranking.slice(0, TOP_RANKING)));
 }
 
 function displayRanking() {
@@ -278,34 +213,34 @@ function displayRanking() {
     .join("");
 }
 
-function saveScore() {
-  const name = prompt("Game over! Enter your name for ranking:") || "Anonymous";
-  const ranking = JSON.parse(localStorage.getItem("ingquest_ranking") || "[]");
-  ranking.push({ name: name.trim().slice(0, 20), score });
-  ranking.sort((a, b) => b.score - a.score);
-  localStorage.setItem("ingquest_ranking", JSON.stringify(ranking.slice(0, TOP_RANKING)));
-  displayRanking();
-}
-
 function endGame() {
   clearInterval(timerInterval);
   saveScore();
-  setFeedback("Round finished!", `Final score: ${score} points. Start a new mode to play again.`, "happy");
-  optionsEl.innerHTML = "";
-  questionTag.textContent = "Completed";
+  displayRanking();
+  updateAuntie("happy");
+  setFeedback("Incrível!", "Você completou toda a trilha da Auntie.");
   currentIdx = 0;
-  lives = 3;
-  score = 0;
-  updateLives();
-  updateScore();
+  localStorage.removeItem("userProgress");
   persistState();
+}
+
+function switchMode(mode) {
+  currentMode = mode;
+  modeData = getModeData(mode);
+  currentIdx = 0;
+  navButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.mode === mode));
+  renderQuestion();
+}
+
+function normalizeText(input) {
+  return input.toLowerCase().replace(/[.,!?']/g, "").replace(/\s+/g, " ").trim();
 }
 
 function setupVoiceRecognition() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
     micBtn.disabled = true;
-    transcriptEl.textContent = "Speech recognition unsupported in this browser.";
+    transcriptEl.textContent = "Speech recognition indisponível neste navegador.";
     return;
   }
 
@@ -316,32 +251,28 @@ function setupVoiceRecognition() {
 
   recognition.onresult = (event) => {
     const spoken = event.results[0][0].transcript;
-    const original = currentQuestion().sentence;
-    transcriptEl.textContent = `You said: "${spoken}"`;
+    transcriptEl.textContent = `Você disse: "${spoken}"`;
 
-    if (normalizeText(spoken) === normalizeText(original)) {
-      score += 100;
+    if (normalizeText(spoken) === normalizeText(currentQuestion().sentence)) {
+      score += 50;
       updateScore();
-      setFeedback("Pronunciation bonus +100", "Perfect repeat! Auntie is proud of you.", "happy");
+      updateAuntie("happy");
+      setFeedback("Pronúncia excelente", "Bônus +50 por repetir a frase com precisão!");
+      persistState();
     } else {
-      setFeedback(
-        "Good try!",
-        `Try again. Expected close to: "${original}"`,
-        "thinking"
-      );
+      updateAuntie("thinking");
+      setFeedback("Boa tentativa", "Tente pronunciar novamente para ganhar bônus.");
     }
 
     micBtn.classList.remove("mic-active");
-    micBtn.textContent = "🎤 Start recording";
+    micBtn.textContent = "🎤 Gravar Pronúncia";
     isRecording = false;
-    persistState();
   };
 
   recognition.onerror = () => {
     micBtn.classList.remove("mic-active");
-    micBtn.textContent = "🎤 Start recording";
+    micBtn.textContent = "🎤 Gravar Pronúncia";
     isRecording = false;
-    setFeedback("Mic error", "Could not capture voice. Check microphone permissions.", "warning");
   };
 }
 
@@ -351,40 +282,34 @@ function toggleRecording() {
   if (!isRecording) {
     recognition.start();
     micBtn.classList.add("mic-active");
-    micBtn.textContent = "🛑 Stop recording";
-    transcriptEl.textContent = "Listening...";
+    micBtn.textContent = "🛑 Parar gravação";
+    transcriptEl.textContent = "Ouvindo...";
   } else {
     recognition.stop();
     micBtn.classList.remove("mic-active");
-    micBtn.textContent = "🎤 Start recording";
+    micBtn.textContent = "🎤 Gravar Pronúncia";
   }
 
   isRecording = !isRecording;
 }
 
-function bootstrap() {
-  loadModePreference();
-  modeData = filterData(currentMode);
+function init() {
+  modeData = getModeData(currentMode);
+  if (currentIdx >= modeData.length) currentIdx = 0;
 
-  if (currentIdx >= modeData.length) {
-    currentIdx = 0;
-  }
-
-  updateLives();
+  updateAuntie("thinking");
   updateScore();
-  navButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.mode === currentMode));
   displayRanking();
   setupVoiceRecognition();
-  updateAuntie("neutral", "Listen first, then answer like a pro.");
-
+  navButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.mode === currentMode));
   renderQuestion();
 }
 
-playBtn.addEventListener("click", playAudio);
 document.getElementById("toggle-text").addEventListener("click", showSentence);
+playBtn.addEventListener("click", playAudio);
 hintBtn.addEventListener("click", useHint);
-nextBtn.addEventListener("click", goNext);
+nextBtn.addEventListener("click", nextQuestion);
 micBtn.addEventListener("click", toggleRecording);
-navButtons.forEach((btn) => btn.addEventListener("click", () => switchGame(btn.dataset.mode)));
+navButtons.forEach((btn) => btn.addEventListener("click", () => switchMode(btn.dataset.mode)));
 
-bootstrap();
+init();
