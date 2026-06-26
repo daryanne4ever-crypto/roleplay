@@ -13,6 +13,8 @@ Projeto educacional gamificado para prática de inglês com foco em listening, g
 
 - Modos: All Challenges, Gerund, Infinitive, Connectors
 - 80 frases no banco (`data/phrases.js`)
+- Botão de áudio normal e botão **🐢 Slow** (reprodução em 0.6x)
+- Dica de pronúncia da Auntie por frase (`pronunciationTip`)
 - Botão de áudio com fallback para Web Speech Synthesis
 - Botão de dica com penalidade leve (`-5`)
 - Reconhecimento de voz (quando suportado pelo navegador)

@@ -12,6 +12,7 @@ const displayText = document.getElementById("display-text");
 const categoryTag = document.getElementById("category-tag");
 const questionTag = document.getElementById("question-tag");
 const playBtn = document.getElementById("play-audio");
+const playSlowBtn = document.getElementById("play-slow");
 const hintBtn = document.getElementById("hint-btn");
 const micBtn = document.getElementById("mic-btn");
 const transcriptEl = document.getElementById("transcript");
@@ -21,6 +22,8 @@ const feedbackSuggestion = document.getElementById("feedback-suggestion");
 const nextBtn = document.getElementById("next-btn");
 const leaderboardEl = document.getElementById("leaderboard");
 const auntieAvatar = document.getElementById("auntie-avatar");
+const tipBox = document.getElementById("pronunciation-box");
+const tipText = document.getElementById("tip-text");
 const navButtons = document.querySelectorAll(".nav-btn");
 
 let currentMode = localStorage.getItem("ingquest_mode") || "all";
@@ -103,10 +106,11 @@ function speakSentence(text) {
   return true;
 }
 
-function playAudio() {
+function playAudio(speed = 1.0) {
   const q = currentQuestion();
   if (!q) return;
   const audio = new Audio(q.audio);
+  audio.playbackRate = speed;
   audio.play().catch(() => {
     if (!speakSentence(q.sentence)) {
       setFeedback("Audio indisponível", "Adicione os arquivos MP3 na pasta /audio.");
@@ -165,6 +169,13 @@ function renderQuestion() {
   hideFeedback();
   sentenceDisplay.classList.add("hidden");
   sentenceDisplay.textContent = q.sentence;
+
+  if (q.pronunciationTip) {
+    tipText.textContent = q.pronunciationTip;
+    tipBox.classList.remove("hidden");
+  } else {
+    tipBox.classList.add("hidden");
+  }
   displayText.classList.add("blur");
   displayText.textContent = q.sentence;
   categoryTag.textContent = q.category.toUpperCase();
@@ -306,7 +317,11 @@ function init() {
 }
 
 document.getElementById("toggle-text").addEventListener("click", showSentence);
-playBtn.addEventListener("click", playAudio);
+playBtn.addEventListener("click", () => playAudio(1.0));
+playSlowBtn.addEventListener("click", () => {
+  updateAuntie("thinking");
+  playAudio(0.6);
+});
 hintBtn.addEventListener("click", useHint);
 nextBtn.addEventListener("click", nextQuestion);
 micBtn.addEventListener("click", toggleRecording);

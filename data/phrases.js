@@ -6,7 +6,8 @@ const makeItem = (
   category,
   difficulty,
   hint,
-  prefix = "q"
+  prefix = "q",
+  pronunciationTip = null
 ) => ({
   id,
   audio: `audio/${prefix}${id}.mp3`,
@@ -16,6 +17,11 @@ const makeItem = (
   category,
   difficulty,
   hint,
+  pronunciationTip:
+    pronunciationTip ||
+    (category === "Connector"
+      ? `Dica: destaque o conector "${answer}" para marcar relação entre as ideias.`
+      : `Dica: repita devagar "${answer}" focando no ritmo e no final da palavra.`),
 });
 
 const gerundVsInfinitive = [

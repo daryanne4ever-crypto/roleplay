@@ -41,12 +41,20 @@
         </div>
 
         <div class="question-box">
-          <button id="play-audio" class="circle-btn" aria-label="Play audio">🔊</button>
+          <div class="audio-controls">
+            <button id="play-audio" class="circle-btn" aria-label="Play audio">🔊</button>
+            <button id="play-slow" class="circle-btn slow-btn" aria-label="Play slow audio">🐢 Slow</button>
+          </div>
           <h2 id="display-text" class="blur">Clique no olho para ver a frase</h2>
           <button id="toggle-text" class="eye-btn" aria-label="Show sentence">👁️</button>
         </div>
 
         <div id="sentence-display" class="hidden sentence-panel"></div>
+
+        <div id="pronunciation-box" class="hint-card hidden">
+          <h4>Dica de Pronúncia da Auntie:</h4>
+          <p id="tip-text"></p>
+        </div>
 
         <div id="options-container" class="options-grid"></div>
 

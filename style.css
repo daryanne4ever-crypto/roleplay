@@ -139,9 +139,42 @@ h1 {
 .question-box {
   margin-top: 18px;
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: 1fr auto;
   gap: 12px;
   align-items: center;
+}
+
+
+.audio-controls {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+
+.slow-btn {
+  background: var(--lilac) !important;
+  color: var(--purple) !important;
+  font-size: 1rem !important;
+  width: 72px !important;
+  height: 54px !important;
+}
+
+.hint-card {
+  background: #f9f0ff;
+  border-left: 5px solid var(--purple);
+  padding: 12px;
+  margin-top: 12px;
+  border-radius: 8px;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.hint-card h4 {
+  margin: 0 0 6px;
+}
+
+.hint-card p {
+  margin: 0;
 }
 
 .circle-btn,
