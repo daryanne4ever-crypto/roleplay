@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>English Quest: Auntie Challenge</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <nav class="sidebar">
+      <div class="logo">EQ</div>
+      <button class="nav-btn active" data-mode="all">All Challenges</button>
+      <button class="nav-btn" data-mode="gerund">Gerund</button>
+      <button class="nav-btn" data-mode="infinitive">Infinitive</button>
+      <button class="nav-btn" data-mode="connector">Connectors</button>
+
+      <div class="progress-info">
+        <span>Total Progress</span>
+        <div class="mini-bar"><div id="total-progress-fill"></div></div>
+      </div>
+    </nav>
+
+    <main class="game-area">
+      <section id="game-card" class="card">
+        <header>
+          <div class="stats">
+            <span>Pontos: <b id="score">0</b></span>
+            <span>Tempo: <b id="timer">120</b>s</span>
+          </div>
+          <h1>English Quest: Auntie Challenge</h1>
+          <div class="progress-bar"><div id="progress"></div></div>
+        </header>
+
+        <div class="card-header">
+          <span id="category-tag">PRÁTICA LIVRE</span>
+          <span id="question-tag">Question 1</span>
+        </div>
+
+        <div class="avatar-container">
+          <img id="auntie-avatar" src="images/auntie-thinking.svg" alt="Auntie" />
+        </div>
+
+        <div class="question-box">
+          <div class="audio-controls">
+            <button id="play-audio" class="circle-btn" aria-label="Play audio">🔊</button>
+            <button id="play-slow" class="circle-btn slow-btn" aria-label="Play slow audio">🐢 Slow</button>
+          </div>
+          <h2 id="display-text" class="blur">Clique no olho para ver a frase</h2>
+          <button id="toggle-text" class="eye-btn" aria-label="Show sentence">👁️</button>
+        </div>
+
+        <div id="sentence-display" class="hidden sentence-panel"></div>
+
+        <div id="pronunciation-box" class="hint-card hidden">
+          <h4>Dica de Pronúncia da Auntie:</h4>
+          <p id="tip-text"></p>
+        </div>
+
+        <div id="options-container" class="options-grid"></div>
+
+        <div class="voice-section">
+          <button id="mic-btn" class="mic-inactive">🎤 Gravar Pronúncia</button>
+          <p id="transcript">Aguardando...</p>
+        </div>
+
+        <section id="feedback-panel" class="feedback-panel hidden">
+          <h3 id="feedback-title"></h3>
+          <p id="feedback-suggestion"></p>
+          <button id="next-btn" class="next-btn">Continuar</button>
+        </section>
+
+        <footer class="card-footer">
+          <button id="hint-btn" class="hint-trigger">💡 Dica da Auntie (-5)</button>
+        </footer>
+      </section>
+
+      <aside id="ranking-section" class="ranking-card">
+        <h3>Class Ranking</h3>
+        <ol id="leaderboard"></ol>
+      </aside>
+    </main>
+
+    <script src="data/phrases.js"></script>
+    <script src="game.js"></script>
+  </body>
+</html>
